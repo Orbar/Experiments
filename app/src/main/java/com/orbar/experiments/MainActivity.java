@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
         Observable<Void> observable = RxView.clicks(mDoubleTapEdit).share();
         observable.buffer(observable.debounce(200, TimeUnit.MILLISECONDS))
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(voids -> voids.size() >= 2)
+                .filter(list -> list.size() >= 2)
+                .filter(list -> !mDoubleTapEdit.isSelected())
                 .subscribe(voids -> {
                     Toast.makeText(this, "Double Click", Toast.LENGTH_SHORT).show();
 
@@ -62,13 +63,18 @@ public class MainActivity extends AppCompatActivity {
             mDoubleTapEdit.setSelected(true);
             mDoubleTapEdit.setKeyListener((KeyListener) mDoubleTapEdit.getTag());
 
+            //move cursor to end
+            mDoubleTapEdit.setSelection(mDoubleTapEdit.getText().length());
+
+            //enable edittext
             mDoubleTapEdit.setCursorVisible(true);
             mDoubleTapEdit.setFocusable(true);
             mDoubleTapEdit.setFocusableInTouchMode(true);
 
-            mDoubleTapEdit.setSelection(mDoubleTapEdit.getText().length());
+            // request focus
+            mDoubleTapEdit.requestFocus();
 
-            //other things
+            //show keyboard
         } else {
             mDoubleTapEdit.setSelected(false);
 
