@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.double_tap_button)
     Button mDoubleTapButton;
 
+    @BindView(R.id.layout_transition_button)
+    Button mLayoutTransitionButton;
+
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
 
     @Override
@@ -51,11 +54,16 @@ public class MainActivity extends AppCompatActivity {
                 RxView.clicks(mDoubleTapButton)
                         .subscribe(event -> startActivity(new Intent(this, DoubleTapEditActivity.class)))
         );
+
+        mSubscriptions.add(
+                RxView.clicks(mLayoutTransitionButton)
+                        .subscribe(event -> startActivity(new Intent(this, LayoutTransitionActivity.class)))
+        );
     }
 
     @Override
     protected void onPause() {
-        mSubscriptions.unsubscribe();
+        mSubscriptions.clear();
         super.onPause();
     }
 }

@@ -14,4 +14,10 @@
         android:layout_height="48dp"
         android:text="Double Tap To Edit" />
 
+    <Button
+        android:id="@+id/layout_transition_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Layout Transitions" />
+
 </LinearLayout>

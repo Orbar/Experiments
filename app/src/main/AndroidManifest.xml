@@ -17,6 +17,8 @@
         </activity>
         <activity android:name=".DoubleTapEditActivity">
         </activity>
+        <activity android:name=".LayoutTransitionActivity">
+        </activity>
     </application>
 
 </manifest>
