@@ -1,12 +1,15 @@
 package com.orbar.experiments;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.KeyListener;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -23,11 +26,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Actions;
 import rx.functions.Func1;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.double_tap_edit)
-    EditText mDoubleTapEdit;
+    @BindView(R.id.double_tap_button)
+    Button mDoubleTapButton;
+
+    private CompositeSubscription mSubscriptions = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,54 +41,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
-        mDoubleTapEdit.setTag(mDoubleTapEdit.getKeyListener());
-        mDoubleTapEdit.setKeyListener(null);
-
-        Observable<Void> observable = RxView.clicks(mDoubleTapEdit).share();
-        observable.buffer(observable.debounce(200, TimeUnit.MILLISECONDS))
-                .observeOn(AndroidSchedulers.mainThread())
-                .filter(list -> list.size() >= 2)
-                .filter(list -> !mDoubleTapEdit.isSelected())
-                .subscribe(voids -> {
-                    Toast.makeText(this, "Double Click", Toast.LENGTH_SHORT).show();
-
-                    enableEditing(!mDoubleTapEdit.isSelected());
-                }, Actions.empty());
-
-        RxTextView.editorActionEvents(mDoubleTapEdit)
-                .filter(event -> event.actionId() == KeyEvent.ACTION_DOWN)
-                .filter(event -> event.keyEvent().getKeyCode() == (KeyEvent.KEYCODE_ENTER))
-                .subscribe(event -> {
-                    enableEditing(false);
-                });
     }
 
-    private void enableEditing(boolean selected) {
-        if (selected) {
-            mDoubleTapEdit.setSelected(true);
-            mDoubleTapEdit.setKeyListener((KeyListener) mDoubleTapEdit.getTag());
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-            //move cursor to end
-            mDoubleTapEdit.setSelection(mDoubleTapEdit.getText().length());
+        mSubscriptions.add(
+                RxView.clicks(mDoubleTapButton)
+                        .subscribe(event -> startActivity(new Intent(this, DoubleTapEditActivity.class)))
+        );
+    }
 
-            //enable edittext
-            mDoubleTapEdit.setCursorVisible(true);
-            mDoubleTapEdit.setFocusable(true);
-            mDoubleTapEdit.setFocusableInTouchMode(true);
-
-            // request focus
-            mDoubleTapEdit.requestFocus();
-
-            //show keyboard
-        } else {
-            mDoubleTapEdit.setSelected(false);
-
-            mDoubleTapEdit.setKeyListener(null);
-
-            mDoubleTapEdit.setCursorVisible(false);
-            mDoubleTapEdit.setFocusable(false);
-            mDoubleTapEdit.setFocusableInTouchMode(false);
-        }
+    @Override
+    protected void onPause() {
+        mSubscriptions.unsubscribe();
+        super.onPause();
     }
 }

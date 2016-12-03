@@ -8,21 +8,10 @@
     android:orientation="vertical"
     tools:context="com.orbar.experiments.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/double_tap_button"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="Double Tap to Edit" />
-
-    <EditText
-        android:id="@+id/double_tap_edit"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:clickable="true"
-        android:background="@drawable/dcte_selector"
-        android:text="Edit Me"
-        android:cursorVisible="false"
-        android:imeOptions="actionDone"
-        android:focusable="false"
-        android:focusableInTouchMode="false" />
+        android:text="Double Tap To Edit" />
 
 </LinearLayout>
